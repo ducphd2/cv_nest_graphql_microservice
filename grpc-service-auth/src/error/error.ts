@@ -1,6 +1,6 @@
 import { RpcException } from '@nestjs/microservices';
 
-const resolveError = (error: any) => {
+export const resolveError = (error: any) => {
   console.log(error);
   const statusCode = error.error.code;
   if (statusCode == 400 || statusCode === 403 || statusCode === 404) {
@@ -12,5 +12,3 @@ const resolveError = (error: any) => {
     });
   }
 };
-
-export default resolveError;

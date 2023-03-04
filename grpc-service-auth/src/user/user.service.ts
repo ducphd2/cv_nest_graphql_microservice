@@ -1,16 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
+import { hash, verify } from 'argon2';
+import { sign } from 'jsonwebtoken';
+import { resolveError } from '../error/error';
 import { User, UserRole } from './entities/user.entity';
 import { InputLoginRequest } from './interfaces/inputLoginRequest';
-import { verify, hash } from 'argon2';
-import { sign } from 'jsonwebtoken';
-import { InputRegisterRequest } from './interfaces/inputRegisterRequest';
-import resolveError from '../error/error';
-import { RpcException } from '@nestjs/microservices';
 import { InputPermissionRequest } from './interfaces/inputPermissionRequest';
-
-import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
+import { InputRegisterRequest } from './interfaces/inputRegisterRequest';
 
 @Injectable()
 export class UserService {
@@ -46,11 +44,7 @@ export class UserService {
       } as User);
 
       return {
-        user: {
-          ...userDb,
-          createdAt: this.dateToTimestamp(userDb.createdAt),
-          updatedAt: this.dateToTimestamp(userDb.updatedAt),
-        },
+        user: userDb,
         accessToken,
       };
     } catch (error) {
@@ -124,9 +118,5 @@ export class UserService {
 
   async signToken(user: User) {
     return sign(user, 'abc');
-  }
-
-  dateToTimestamp(date: Date): number {
-    return Timestamp.fromDate(date).getSeconds();
   }
 }
