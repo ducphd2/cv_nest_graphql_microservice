@@ -1,5 +1,10 @@
 import { Property, PrimaryKey } from '@mikro-orm/core';
 
+export const getDateInSeconds = (date: Date): number =>
+  Math.floor(date.getTime() / 1000);
+
+export const getCurrentDateInSecond = getDateInSeconds(new Date());
+
 export abstract class BaseEntity {
   @PrimaryKey({
     autoincrement: true,
@@ -7,10 +12,15 @@ export abstract class BaseEntity {
   id!: number;
 
   @Property({
-    type: 'timestamptz',
+    type: 'bigint',
+    default: getCurrentDateInSecond,
   })
-  createdAt: Date = new Date();
+  createdAt: number = getCurrentDateInSecond;
 
-  @Property({ type: 'timestamptz', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  @Property({
+    type: 'bigint',
+    onUpdate: () => new Date(),
+    default: getCurrentDateInSecond,
+  })
+  updatedAt: number = getCurrentDateInSecond;
 }
